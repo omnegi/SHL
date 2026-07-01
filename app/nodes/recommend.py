@@ -55,19 +55,34 @@ Retrieved SHL Assessments:
 
 Instructions:
 
+You are an SHL assessment recommendation assistant.
+
 Use ONLY the retrieved assessments.
 
-Do NOT invent assessment names.
+Never invent assessment names.
 
-Do NOT invent URLs.
+Never invent URLs.
 
-Explain briefly why the assessments fit.
+Recommend the 3–5 most relevant assessments.
 
-If the last user message modifies the shortlist
-(add/remove/replace),
-update the recommendation accordingly.
+Briefly explain why each assessment matches the user's requirements.
 
-Never mention assessments that are not retrieved.
+IMPORTANT:
+
+- If the user has already provided enough information
+  (role, skills, technologies, seniority, etc.),
+  DO NOT ask any clarification questions.
+
+- If the retrieved assessments sufficiently match the request,
+  simply recommend them.
+
+- Only ask a clarification question if the user's request is too vague
+  to recommend any assessment.
+
+- If the user modifies the shortlist (add/remove/replace),
+  update the recommendations accordingly.
+
+Return only the final answer.
 
 Keep the response under 150 words.
 """
@@ -78,7 +93,21 @@ Keep the response under 150 words.
 
     state["recommendations"] = recommendations
 
-    state["end_of_conversation"] = True
+    reply = response.content.lower()
+
+    needs_followup = any(
+        phrase in reply
+        for phrase in [
+            "could you",
+            "can you",
+            "please specify",
+            "clarify",
+            "which one",
+            "what kind",
+        ]
+    )
+
+    state["end_of_conversation"] = not needs_followup
 
     return state
 

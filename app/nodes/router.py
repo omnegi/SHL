@@ -1,40 +1,36 @@
-from app import state
-
-
-COMPARE_WORDS = {
-    "compare", "difference", "vs", "versus"
-}
+COMPARE_WORDS = {"compare", "difference", "vs", "versus"}
 
 OFFTOPIC_WORDS = {
-    "salary", "visa", "weather", "politics", "tax", "football"
+    "salary",
+    "visa",
+    "tax",
+    "weather",
+    "politics",
 }
 
-ROLE_WORDS = {
+ROLE_KEYWORDS = {
     "developer",
     "engineer",
     "analyst",
     "manager",
     "sales",
     "operator",
-    "java",
-    "python",
     "backend",
     "frontend",
-    "aws",
-    "sql",
-    "spring",
-    "react",
-    "node",
 }
 
-SENIORITY = {
-    "intern",
-    "entry",
-    "junior",
-    "mid",
-    "senior",
-    "lead",
-    "principal",
+TECH_KEYWORDS = {
+    "java",
+    "python",
+    "spring",
+    "spring boot",
+    "sql",
+    "aws",
+    "docker",
+    "react",
+    "node",
+    "javascript",
+    "c++",
 }
 
 
@@ -42,26 +38,19 @@ def router(state):
     query = state["messages"][-1].content.lower()
 
     state["query"] = query
-    state["comparison"] = False
-    state["off_topic"] = False
-    state["clarification_needed"] = False
 
-    if any(word in query for word in COMPARE_WORDS):
-        state["comparison"] = True
+    state["comparison"] = any(x in query for x in COMPARE_WORDS)
+    state["off_topic"] = any(x in query for x in OFFTOPIC_WORDS)
+
+    if state["comparison"] or state["off_topic"]:
+        state["clarification_needed"] = False
         return state
 
-    if any(word in query for word in OFFTOPIC_WORDS):
-        state["off_topic"] = True
-        return state
+    has_role = any(k in query for k in ROLE_KEYWORDS)
+    has_skill = any(k in query for k in TECH_KEYWORDS)
 
-    has_role = any(word in query for word in ROLE_WORDS)
-    has_level = any(word in query for word in SENIORITY)
-
-    # Only clarify when we truly don't know what the user wants
-    if not has_role:
-        state["clarification_needed"] = True
+    # Recommend if the user has given either a role or technical skills.
+    state["clarification_needed"] = not (has_role or has_skill)
 
     return state
 
-print("ROUTER")
-print(state)

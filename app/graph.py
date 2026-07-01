@@ -28,31 +28,14 @@ workflow.set_entry_point("router")
 
 def route(state):
 
-    prompt = f"""
-Classify this user message.
-
-Return ONLY ONE WORD.
-
-clarify
-recommend
-compare
-refuse
-
-Message:
-
-{state["query"]}
-"""
-
-    decision = llm.invoke(prompt).content.strip().lower()
-
-    if "clarify" in decision:
-        return "clarify"
-
-    if "compare" in decision:
+    if state["comparison"]:
         return "compare"
 
-    if "refuse" in decision:
+    if state["off_topic"]:
         return "refuse"
+
+    if state["clarification_needed"]:
+        return "clarify"
 
     return "retrieve"
 
