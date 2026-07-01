@@ -1,18 +1,25 @@
+from functools import lru_cache
+
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 
-embedding = HuggingFaceEmbeddings(
-    model_name="BAAI/bge-small-en-v1.5"
-)
 
-db = FAISS.load_local(
-    "data/faiss",
-    embedding,
-    allow_dangerous_deserialization=True,
-)
+@lru_cache(maxsize=1)
+def get_db():
+    embedding = HuggingFaceEmbeddings(
+        model_name="sentence-transformers/all-MiniLM-L6-v2"
+    )
+
+    return FAISS.load_local(
+        "data/faiss",
+        embedding,
+        allow_dangerous_deserialization=True,
+    )
 
 
 def search_assessments(query: str, k: int = 20):
+    db = get_db()
+
     retriever = db.as_retriever(
         search_type="mmr",
         search_kwargs={
