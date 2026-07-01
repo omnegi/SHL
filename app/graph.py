@@ -1,6 +1,6 @@
 from langgraph.graph import StateGraph, END
 
-from app.services import llm
+from app.services.llm import llm
 from app.state import AgentState
 
 from app.nodes.router import router
