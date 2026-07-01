@@ -81,3 +81,5 @@ Keep the response under 150 words.
     state["end_of_conversation"] = True
 
     return state
+
+print("RECOMMEND")

@@ -82,3 +82,5 @@ Return between 1 and 7 ids.
     state["recommendations"] = recommendations
 
     return state
+
+print("RANK")

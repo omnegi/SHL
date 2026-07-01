@@ -13,3 +13,5 @@ def retrieve(state):
     state["docs"] = docs
 
     return state
+
+print("RETRIEVE")
